@@ -1,0 +1,25 @@
+{
+  "expo": {
+    "name": "Expense Manager",
+    "slug": "expense-manager",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "resizeMode": "contain",
+      "backgroundColor": "#080B12"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#080B12"
+      },
+      "edgeToEdgeEnabled": true
+    }
+  }
+}
