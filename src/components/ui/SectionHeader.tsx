@@ -26,6 +26,7 @@ const styles = StyleSheet.create({
   title: {
     color: theme.colors.text,
     fontSize: theme.typography.h3,
-    fontWeight: "700",
+    fontWeight: "800",
+    letterSpacing: -0.3,
   },
 });

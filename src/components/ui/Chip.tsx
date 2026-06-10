@@ -11,7 +11,7 @@ type Props = {
 
 export function Chip({ label, active, onPress }: Props) {
   return (
-    <PressableScale onPress={onPress} style={[styles.chip, active && styles.activeChip]}>
+    <PressableScale haptic="selection" onPress={onPress} style={[styles.chip, active && styles.activeChip]}>
       <Text style={[styles.text, active && styles.activeText]}>{label}</Text>
     </PressableScale>
   );
@@ -20,20 +20,21 @@ export function Chip({ label, active, onPress }: Props) {
 const styles = StyleSheet.create({
   chip: {
     paddingHorizontal: 14,
-    paddingVertical: 10,
+    paddingVertical: 11,
     borderRadius: theme.radius.pill,
-    backgroundColor: theme.colors.surface,
+    backgroundColor: theme.colors.surfaceSoft,
     borderWidth: 1,
     borderColor: theme.colors.border,
   },
   activeChip: {
-    backgroundColor: "rgba(121,168,255,0.18)",
-    borderColor: "rgba(121,168,255,0.45)",
+    backgroundColor: "rgba(121,168,255,0.16)",
+    borderColor: "rgba(121,168,255,0.5)",
   },
   text: {
     color: theme.colors.textMuted,
     fontSize: theme.typography.caption,
-    fontWeight: "600",
+    fontWeight: "700",
+    textTransform: "capitalize",
   },
   activeText: {
     color: theme.colors.text,

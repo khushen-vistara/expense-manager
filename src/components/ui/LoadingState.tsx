@@ -22,9 +22,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: theme.colors.border,
     minHeight: 180,
+    ...theme.shadow.soft,
   },
   label: {
     color: theme.colors.textMuted,
     fontSize: theme.typography.body,
+    textAlign: "center",
   },
 });

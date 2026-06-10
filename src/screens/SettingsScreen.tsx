@@ -18,7 +18,7 @@ export function SettingsScreen() {
     <Screen>
       <View style={styles.hero}>
         <Text style={styles.heading}>Settings</Text>
-        <Text style={styles.subheading}>Keep the core settings simple and ready for future growth.</Text>
+        <Text style={styles.subheading}>Keep the essentials quiet, useful, and easy to trust.</Text>
       </View>
 
       {loading ? <LoadingState label="Loading preferences..." /> : null}
@@ -44,8 +44,8 @@ export function SettingsScreen() {
       <View style={styles.card}>
         <Text style={styles.cardTitle}>Future features</Text>
         <Text style={styles.listItem}>PIN / biometric lock</Text>
-        <Text style={styles.listItem}>Cloud sync</Text>
-        <Text style={styles.listItem}>Export CSV</Text>
+        <Text style={styles.listItem}>Private backup sync</Text>
+        <Text style={styles.listItem}>CSV export</Text>
       </View>
 
       <View style={styles.card}>
@@ -81,6 +81,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: theme.colors.border,
     gap: theme.spacing.md,
+    ...theme.shadow.soft,
   },
   cardTitle: {
     color: theme.colors.text,
@@ -100,6 +101,7 @@ const styles = StyleSheet.create({
     borderRadius: theme.radius.pill,
     alignItems: "center",
     paddingVertical: 15,
+    ...theme.shadow.soft,
   },
   primaryButtonText: {
     color: theme.colors.background,
@@ -120,6 +122,7 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     borderWidth: 1,
     borderColor: "rgba(255,107,129,0.28)",
+    ...theme.shadow.soft,
   },
   destructiveText: {
     color: theme.colors.danger,

@@ -45,7 +45,7 @@ export function TransactionsScreen() {
     <Screen>
       <View style={styles.header}>
         <Text style={styles.heading}>Transactions</Text>
-        <Text style={styles.subheading}>Readable, filterable, and quick to edit.</Text>
+        <Text style={styles.subheading}>Refined search, clean filters, and direct edits.</Text>
       </View>
 
       <SearchBar value={query} onChangeText={setQuery} placeholder="Search title, category, or note" />
@@ -87,8 +87,8 @@ export function TransactionsScreen() {
         <LoadingState label="Loading transactions..." />
       ) : filtered.length === 0 ? (
         <EmptyState
-          title="Nothing matches these filters"
-          description="Try a different month, category, or type. You can also add a new transaction right away."
+          title="No matching transactions"
+          description="Try a broader filter or add a fresh entry. The list stays focused when there is something worth showing."
           actionLabel="Add transaction"
           onAction={() => openQuickAdd()}
         />

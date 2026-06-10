@@ -31,8 +31,8 @@ export function InsightsScreen() {
       <Screen>
         <Text style={styles.heading}>Insights</Text>
         <EmptyState
-          title="Insights unlock with activity"
-          description="Add a few transactions and this screen will highlight spending patterns and monthly performance."
+          title="Insights need a little activity"
+          description="Add a few entries and this screen will turn them into useful pace, category, and trend signals."
           actionLabel="Add transaction"
           onAction={() => openQuickAdd()}
         />
@@ -44,7 +44,7 @@ export function InsightsScreen() {
     <Screen>
       <View style={styles.hero}>
         <Text style={styles.heading}>Insights</Text>
-        <Text style={styles.subheading}>Elegant summaries without noisy charts.</Text>
+        <Text style={styles.subheading}>Quiet signals, surfaced without dashboard clutter.</Text>
       </View>
 
       <View style={styles.summaryCard}>
@@ -140,6 +140,7 @@ const styles = StyleSheet.create({
     borderColor: theme.colors.border,
     flexDirection: "row",
     alignItems: "center",
+    ...theme.shadow.soft,
   },
   summaryItem: {
     flex: 1,
@@ -167,11 +168,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: theme.colors.border,
     gap: theme.spacing.md,
+    ...theme.shadow.soft,
   },
   cardTitle: {
     color: theme.colors.text,
     fontSize: theme.typography.h3,
-    fontWeight: "700",
+    fontWeight: "800",
   },
   topCategory: {
     color: theme.colors.text,

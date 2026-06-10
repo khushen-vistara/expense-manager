@@ -14,6 +14,7 @@ type Props = {
 };
 
 export function BalanceCard(props: Props) {
+  const net = props.income - props.expenses;
   const stats = [
     { label: "Income", value: formatCurrency(props.income) },
     { label: "Expenses", value: formatCurrency(props.expenses) },
@@ -24,8 +25,16 @@ export function BalanceCard(props: Props) {
   return (
     <Animated.View entering={FadeInDown.duration(400)}>
       <LinearGradient colors={["#1A2340", "#10192D", "#0D1322"]} style={styles.card}>
-        <Text style={styles.eyebrow}>Available balance</Text>
-        <Text style={styles.balance}>{formatCurrency(props.availableBalance)}</Text>
+        <View style={styles.topRow}>
+          <View>
+            <Text style={styles.eyebrow}>Current balance</Text>
+            <Text style={styles.balance}>{formatCurrency(props.availableBalance)}</Text>
+          </View>
+          <View style={styles.netPill}>
+            <Text style={styles.netLabel}>Net this month</Text>
+            <Text style={styles.netValue}>{net >= 0 ? "+" : "-"}{formatCurrency(Math.abs(net))}</Text>
+          </View>
+        </View>
         <View style={styles.grid}>
           {stats.map((stat) => (
             <View key={stat.label} style={styles.stat}>
@@ -47,33 +56,71 @@ const styles = StyleSheet.create({
     borderColor: "rgba(255,255,255,0.08)",
     ...theme.shadow.card,
   },
+  topRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    gap: theme.spacing.md,
+    marginBottom: theme.spacing.lg,
+  },
   eyebrow: {
     color: theme.colors.textMuted,
     fontSize: theme.typography.caption,
     marginBottom: 8,
+    textTransform: "uppercase",
+    letterSpacing: 1,
+    fontWeight: "700",
   },
   balance: {
     color: theme.colors.text,
     fontSize: theme.typography.hero,
     fontWeight: "800",
-    marginBottom: theme.spacing.lg,
+    letterSpacing: -1,
+  },
+  netPill: {
+    minWidth: 118,
+    backgroundColor: "rgba(255,255,255,0.08)",
+    borderRadius: theme.radius.md,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.08)",
+  },
+  netLabel: {
+    color: theme.colors.textSoft,
+    fontSize: theme.typography.tiny,
+    fontWeight: "700",
+    textTransform: "uppercase",
+    letterSpacing: 0.8,
+  },
+  netValue: {
+    color: theme.colors.text,
+    fontSize: theme.typography.body,
+    fontWeight: "800",
+    marginTop: 4,
   },
   grid: {
     flexDirection: "row",
     flexWrap: "wrap",
-    rowGap: theme.spacing.lg,
+    gap: theme.spacing.md,
   },
   stat: {
-    width: "50%",
-    gap: 6,
+    width: "47%",
+    gap: 8,
+    padding: 14,
+    borderRadius: theme.radius.md,
+    backgroundColor: "rgba(255,255,255,0.04)",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.05)",
   },
   statLabel: {
     color: theme.colors.textSoft,
     fontSize: theme.typography.caption,
+    fontWeight: "600",
   },
   statValue: {
     color: theme.colors.text,
-    fontWeight: "700",
-    fontSize: theme.typography.body,
+    fontWeight: "800",
+    fontSize: 16,
   },
 });

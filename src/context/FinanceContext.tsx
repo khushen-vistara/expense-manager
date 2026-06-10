@@ -51,6 +51,7 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
   };
 
   const openQuickAdd = (transaction?: Transaction) => {
+    void Haptics.selectionAsync();
     setQuickAdd({ visible: true, editingTransactionId: transaction?.id });
     sheetRef.current?.present();
   };

@@ -21,11 +21,12 @@ const styles = StyleSheet.create({
   card: {
     flexDirection: "row",
     gap: theme.spacing.md,
-    backgroundColor: theme.colors.surface,
+    backgroundColor: theme.colors.surfaceSoft,
     borderRadius: theme.radius.lg,
     padding: theme.spacing.lg,
     borderWidth: 1,
     borderColor: theme.colors.border,
+    ...theme.shadow.soft,
   },
   icon: {
     width: 42,
@@ -37,16 +38,19 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    gap: 4,
+    gap: 6,
   },
   label: {
     color: theme.colors.warning,
-    fontSize: theme.typography.caption,
-    fontWeight: "700",
+    fontSize: theme.typography.tiny,
+    fontWeight: "800",
+    textTransform: "uppercase",
+    letterSpacing: 1,
   },
   message: {
     color: theme.colors.text,
     fontSize: theme.typography.body,
-    lineHeight: 22,
+    lineHeight: 23,
+    fontWeight: "500",
   },
 });

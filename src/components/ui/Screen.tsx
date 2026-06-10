@@ -13,6 +13,7 @@ export function Screen({ children, contentContainerStyle, ...props }: Props) {
     <LinearGradient colors={["#070A11", "#0A1020", "#080B12"]} style={styles.root}>
       <SafeAreaView style={styles.safeArea}>
         <View pointerEvents="none" style={styles.glow} />
+        <View pointerEvents="none" style={styles.glowSecondary} />
         <ScrollView
           {...props}
           contentContainerStyle={[styles.content, contentContainerStyle]}
@@ -41,10 +42,19 @@ const styles = StyleSheet.create({
     borderRadius: 240,
     backgroundColor: theme.colors.cardGlow,
   },
+  glowSecondary: {
+    position: "absolute",
+    bottom: -140,
+    left: -90,
+    width: 220,
+    height: 220,
+    borderRadius: 220,
+    backgroundColor: "rgba(155,140,255,0.08)",
+  },
   content: {
     paddingHorizontal: theme.spacing.lg,
     paddingTop: theme.spacing.sm,
     paddingBottom: 120,
-    gap: theme.spacing.lg,
+    gap: 20,
   },
 });

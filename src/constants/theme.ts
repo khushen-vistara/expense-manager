@@ -5,6 +5,7 @@ export const theme = {
     surface: "#121827",
     surfaceSoft: "#171F31",
     surfaceMuted: "#1D2536",
+    surfaceRaised: "#1A2234",
     border: "rgba(255,255,255,0.08)",
     borderStrong: "rgba(255,255,255,0.14)",
     text: "#F3F6FF",
@@ -25,12 +26,13 @@ export const theme = {
     lg: 18,
     xl: 24,
     xxl: 32,
+    xxxl: 40,
   },
   radius: {
     sm: 12,
-    md: 18,
-    lg: 24,
-    xl: 32,
+    md: 20,
+    lg: 28,
+    xl: 36,
     pill: 999,
   },
   typography: {
@@ -45,10 +47,17 @@ export const theme = {
   shadow: {
     card: {
       shadowColor: "#000000",
-      shadowOpacity: 0.28,
-      shadowRadius: 24,
-      shadowOffset: { width: 0, height: 16 },
-      elevation: 12,
+      shadowOpacity: 0.22,
+      shadowRadius: 28,
+      shadowOffset: { width: 0, height: 18 },
+      elevation: 10,
+    },
+    soft: {
+      shadowColor: "#000000",
+      shadowOpacity: 0.12,
+      shadowRadius: 14,
+      shadowOffset: { width: 0, height: 8 },
+      elevation: 4,
     },
   },
 } as const;
