@@ -8,8 +8,7 @@ import { LoadingState } from "@/components/ui/LoadingState";
 import { TransactionItem } from "@/components/transactions/TransactionItem";
 import { useFinance } from "@/hooks/useFinance";
 import { theme } from "@/constants/theme";
-import { getMonthOptions, monthKey } from "@/utils/date";
-import { formatMonthLabel } from "@/utils/date";
+import { formatMonthLabel, getMonthOptions, monthKey } from "@/utils/date";
 import { EXPENSE_CATEGORIES, INCOME_CATEGORIES } from "@/constants/categories";
 import { TransactionType } from "@/types";
 
