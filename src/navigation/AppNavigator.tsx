@@ -2,7 +2,7 @@ import React from "react";
 import { NavigationContainer, DarkTheme } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { LayoutGrid, List, Plus, Settings, TrendingUp } from "lucide-react-native";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { theme } from "@/constants/theme";
 import { HomeScreen } from "@/screens/HomeScreen";
 import { TransactionsScreen } from "@/screens/TransactionsScreen";

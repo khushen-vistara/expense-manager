@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useMemo, useRef, useState } from "react";
+import React, { createContext, useEffect, useRef, useState } from "react";
 import { Alert } from "react-native";
 import * as Haptics from "expo-haptics";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
@@ -146,24 +146,21 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
     ]);
   };
 
-  const value = useMemo(
-    () => ({
-      transactions,
-      budget,
-      loading,
-      quickAdd,
-      sheetRef,
-      openQuickAdd,
-      closeQuickAdd,
-      syncQuickAddClosed,
-      addTransaction,
-      updateTransaction,
-      deleteTransaction,
-      setMonthlyBudget,
-      clearAllData,
-    }),
-    [transactions, budget, loading, quickAdd]
-  );
+  const value = {
+    transactions,
+    budget,
+    loading,
+    quickAdd,
+    sheetRef,
+    openQuickAdd,
+    closeQuickAdd,
+    syncQuickAddClosed,
+    addTransaction,
+    updateTransaction,
+    deleteTransaction,
+    setMonthlyBudget,
+    clearAllData,
+  };
 
   return <FinanceContext.Provider value={value}>{children}</FinanceContext.Provider>;
 }
