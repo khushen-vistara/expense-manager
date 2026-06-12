@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, View } from "react-native";
-import { BottomSheetModal, BottomSheetScrollView } from "@gorhom/bottom-sheet";
+import { BottomSheetBackdrop, BottomSheetModal, BottomSheetScrollView } from "@gorhom/bottom-sheet";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { CalendarDays, ChevronDown, Plus } from "lucide-react-native";
 import { theme } from "@/constants/theme";
 import { EXPENSE_CATEGORIES, INCOME_CATEGORIES } from "@/constants/categories";
@@ -23,11 +24,14 @@ function createDefaultDraft(): TransactionDraft {
 
 export function TransactionSheet() {
   const { quickAdd, sheetRef, transactions, addTransaction, updateTransaction, syncQuickAddClosed } = useFinance();
+  const insets = useSafeAreaInsets();
   const [draft, setDraft] = useState<TransactionDraft>(createDefaultDraft);
   const [saving, setSaving] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const amountRef = useRef<TextInput>(null);
   const snapPoints = useMemo(() => ["68%", "84%"], []);
+  const navGuardHeight = Platform.OS === "android" ? Math.max(insets.bottom + 8, 40) : Math.max(insets.bottom, 16);
+  const contentBottomPadding = navGuardHeight + theme.spacing.xxxl + theme.spacing.xl;
 
   useEffect(() => {
     const current = transactions.find((item) => item.id === quickAdd.editingTransactionId);
@@ -90,15 +94,27 @@ export function TransactionSheet() {
       android_keyboardInputMode="adjustResize"
       onChange={handleSheetChange}
       onDismiss={syncQuickAddClosed}
+      backdropComponent={(props) => (
+        <BottomSheetBackdrop
+          {...props}
+          appearsOnIndex={0}
+          disappearsOnIndex={-1}
+          opacity={0.72}
+          pressBehavior="close"
+        />
+      )}
       backgroundStyle={styles.background}
       handleIndicatorStyle={styles.indicator}
     >
-      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={styles.flex}>
-        <BottomSheetScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={styles.sheetBody}>
+        <BottomSheetScrollView
+          contentContainerStyle={[styles.content, { paddingBottom: contentBottomPadding }]}
+          keyboardShouldPersistTaps="handled"
+        >
           <View style={styles.header}>
             <View style={styles.headerCopy}>
               <Text style={styles.title}>{isEditing ? "Refine entry" : "Quick add"}</Text>
-              <Text style={styles.subtitle}>The essentials first. Everything else stays optional.</Text>
+              <Text style={styles.subtitle}>Capture a transaction in seconds and keep your spending up to date.</Text>
             </View>
             <View style={styles.datePill}>
               <CalendarDays size={14} color={theme.colors.textMuted} />
@@ -208,6 +224,7 @@ export function TransactionSheet() {
             <Text style={styles.saveText}>{saving ? "Saving..." : isEditing ? "Save changes" : "Save transaction"}</Text>
           </PressableScale>
         </BottomSheetScrollView>
+        <View pointerEvents="none" style={[styles.navGuard, { height: navGuardHeight }]} />
       </KeyboardAvoidingView>
     </BottomSheetModal>
   );
@@ -216,6 +233,10 @@ export function TransactionSheet() {
 const styles = StyleSheet.create({
   flex: {
     flex: 1,
+  },
+  sheetBody: {
+    flex: 1,
+    overflow: "hidden",
   },
   background: {
     backgroundColor: "#0F1524",
@@ -228,8 +249,14 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingHorizontal: theme.spacing.lg,
-    paddingBottom: 36,
     gap: theme.spacing.lg,
+  },
+  navGuard: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: -8,
+    backgroundColor: theme.colors.background,
   },
   header: {
     flexDirection: "row",

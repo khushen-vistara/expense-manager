@@ -29,7 +29,7 @@ export function HomeScreen() {
       <Animated.View entering={FadeInDown.duration(350)} style={styles.header}>
         <View style={styles.headerCopy}>
           <Text style={styles.eyebrow}>Overview</Text>
-          <Text style={styles.heading}>A cleaner view of {monthLabel}.</Text>
+          <Text style={styles.heading}>Your money at a glance for {monthLabel}.</Text>
           <Text style={styles.subheading}>
             {transactions.length === 0
               ? "Start with one entry and the rest of the app will come alive."

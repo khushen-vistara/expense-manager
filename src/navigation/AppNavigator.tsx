@@ -3,31 +3,27 @@ import { NavigationContainer, DarkTheme } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { LayoutGrid, List, Plus, Settings, TrendingUp } from "lucide-react-native";
 import { StyleSheet, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { theme } from "@/constants/theme";
 import { HomeScreen } from "@/screens/HomeScreen";
 import { TransactionsScreen } from "@/screens/TransactionsScreen";
 import { InsightsScreen } from "@/screens/InsightsScreen";
 import { SettingsScreen } from "@/screens/SettingsScreen";
-import { PressableScale } from "@/components/ui/PressableScale";
 import { useFinance } from "@/hooks/useFinance";
 import { TransactionSheet } from "@/components/forms/TransactionSheet";
 
 const Tab = createBottomTabNavigator();
 
-function FloatingActionButton() {
-  const { openQuickAdd } = useFinance();
-
-  return (
-    <View pointerEvents="box-none" style={styles.fabWrap}>
-      <PressableScale onPress={() => openQuickAdd()} style={styles.fab}>
-        <Plus size={24} color={theme.colors.background} />
-      </PressableScale>
-    </View>
-  );
+function QuickAddScreen() {
+  return null;
 }
 
 function AppTabs() {
+  const insets = useSafeAreaInsets();
+  const { openQuickAdd } = useFinance();
   const iconSize = 20;
+  const bottomInset = Math.max(insets.bottom, theme.spacing.md);
+  const tabBarHeight = 56 + bottomInset;
 
   return (
     <>
@@ -36,8 +32,13 @@ function AppTabs() {
           headerShown: false,
           tabBarActiveTintColor: theme.colors.text,
           tabBarInactiveTintColor: theme.colors.textSoft,
-          tabBarStyle: styles.tabBar,
-          tabBarBackground: () => <View style={styles.tabBarBackground} />,
+          tabBarStyle: [
+            styles.tabBar,
+            {
+              height: tabBarHeight,
+              paddingBottom: bottomInset,
+            },
+          ],
           tabBarLabelStyle: styles.tabBarLabel,
           tabBarHideOnKeyboard: true,
           sceneStyle: { backgroundColor: theme.colors.background },
@@ -54,7 +55,30 @@ function AppTabs() {
           name="Transactions"
           component={TransactionsScreen}
           options={{
+            tabBarLabel: "Activity",
             tabBarIcon: ({ color }) => <List size={iconSize} color={color} />,
+          }}
+        />
+        <Tab.Screen
+          name="QuickAdd"
+          component={QuickAddScreen}
+          listeners={{
+            tabPress: (event) => {
+              event.preventDefault();
+              openQuickAdd();
+            },
+          }}
+          options={{
+            tabBarLabel: "",
+            tabBarIcon: ({ focused }) => (
+              <View style={styles.centerTabButton}>
+                <Plus
+                  size={20}
+                  color={focused ? "#FFFFFF" : "rgba(255,255,255,0.96)"}
+                  strokeWidth={2.4}
+                />
+              </View>
+            ),
           }}
         />
         <Tab.Screen
@@ -72,7 +96,6 @@ function AppTabs() {
           }}
         />
       </Tab.Navigator>
-      <FloatingActionButton />
       <TransactionSheet />
     </>
   );
@@ -101,40 +124,29 @@ export function AppNavigator() {
 const styles = StyleSheet.create({
   tabBar: {
     position: "absolute",
-    height: 84,
+    left: 0,
+    right: 0,
+    bottom: 0,
     paddingTop: 10,
-    paddingBottom: 18,
-    backgroundColor: "transparent",
+    backgroundColor: theme.colors.backgroundElevated,
     borderTopWidth: 0,
-  },
-  tabBarBackground: {
-    flex: 1,
-    marginHorizontal: 18,
-    marginBottom: 12,
-    borderRadius: 28,
-    backgroundColor: "rgba(14, 19, 32, 0.96)",
-    borderWidth: 1,
-    borderColor: theme.colors.border,
+    elevation: 0,
   },
   tabBarLabel: {
     fontSize: 11,
     fontWeight: "700",
     marginTop: 2,
   },
-  fabWrap: {
-    position: "absolute",
-    bottom: 42,
-    left: 0,
-    right: 0,
-    alignItems: "center",
-  },
-  fab: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: theme.colors.text,
+  centerTabButton: {
     alignItems: "center",
     justifyContent: "center",
-    ...theme.shadow.card,
+    width: 28,
+    height: 28,
+    marginTop: 2,
+    shadowColor: "#FFFFFF",
+    shadowOpacity: 0.28,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 0 },
+    elevation: 0,
   },
 });
