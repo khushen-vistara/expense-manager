@@ -1,11 +1,10 @@
 ## Summary
 
-Describe the purpose of this PR.
+# Describe the purpose of this PR.
 
 ## Changes
 
-- 
-- 
+-
 
 ## Testing
 
@@ -15,7 +14,7 @@ Describe the purpose of this PR.
 
 ## Screenshots
 
-Add screenshots if the UI changed.
+# Add screenshots if the UI changed, N/A if none.
 
 ## Checklist
 
