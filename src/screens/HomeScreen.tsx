@@ -33,7 +33,7 @@ export function HomeScreen() {
           <Text style={styles.subheading}>
             {transactions.length === 0
               ? "Start with one entry and the rest of the app will come alive."
-              : `${transactions.length} entries tracked with a calm monthly snapshot.`}
+              : `${transactions.length} ${transactions.length === 1 ? "entry" : "entries"} recorded so far this month.`}
           </Text>
         </View>
         <PressableScale haptic="medium" onPress={() => openQuickAdd()} style={styles.quickPill}>
