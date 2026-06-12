@@ -30,8 +30,8 @@ export function TransactionSheet() {
   const [showDetails, setShowDetails] = useState(false);
   const amountRef = useRef<TextInput>(null);
   const snapPoints = useMemo(() => ["68%", "84%"], []);
-  const navGuardHeight = Platform.OS === "android" ? Math.max(insets.bottom, 32) : Math.max(insets.bottom, 16);
-  const contentBottomPadding = theme.spacing.xxxl + theme.spacing.xl;
+  const navGuardHeight = Platform.OS === "android" ? Math.max(insets.bottom + 8, 40) : Math.max(insets.bottom, 16);
+  const contentBottomPadding = navGuardHeight + theme.spacing.xxxl + theme.spacing.xl;
 
   useEffect(() => {
     const current = transactions.find((item) => item.id === quickAdd.editingTransactionId);
@@ -252,6 +252,10 @@ const styles = StyleSheet.create({
     gap: theme.spacing.lg,
   },
   navGuard: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: -8,
     backgroundColor: theme.colors.background,
   },
   header: {
