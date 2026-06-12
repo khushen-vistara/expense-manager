@@ -1,15 +1,15 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, View } from "react-native";
+import { Keyboard, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, View } from "react-native";
 import { BottomSheetBackdrop, BottomSheetModal, BottomSheetScrollView } from "@gorhom/bottom-sheet";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { CalendarDays, ChevronDown, Plus } from "lucide-react-native";
+import { CalendarDays, ChevronDown, ChevronLeft, ChevronRight, Plus } from "lucide-react-native";
 import { theme } from "@/constants/theme";
 import { EXPENSE_CATEGORIES, INCOME_CATEGORIES } from "@/constants/categories";
 import { useFinance } from "@/hooks/useFinance";
 import { Chip } from "@/components/ui/Chip";
 import { PressableScale } from "@/components/ui/PressableScale";
 import { TransactionDraft } from "@/types";
-import { formatFriendlyDate, toISODate } from "@/utils/date";
+import { formatFriendlyDate, formatMonthLabel, toISODate } from "@/utils/date";
 
 function createDefaultDraft(): TransactionDraft {
   return {
@@ -28,26 +28,39 @@ export function TransactionSheet() {
   const [draft, setDraft] = useState<TransactionDraft>(createDefaultDraft);
   const [saving, setSaving] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
+  const [showDateControls, setShowDateControls] = useState(false);
   const amountRef = useRef<TextInput>(null);
   const snapPoints = useMemo(() => ["68%", "84%"], []);
   const navGuardHeight = Platform.OS === "android" ? Math.max(insets.bottom + 8, 40) : Math.max(insets.bottom, 16);
   const contentBottomPadding = navGuardHeight + theme.spacing.xxxl + theme.spacing.xl;
+  const today = useMemo(() => startOfDay(new Date()), []);
+  const selectedDate = new Date(draft.date);
+  const [visibleMonth, setVisibleMonth] = useState(() => startOfMonth(selectedDate));
+  const isCurrentMonthVisible =
+    visibleMonth.getFullYear() === today.getFullYear() && visibleMonth.getMonth() === today.getMonth();
+  const calendarDays = useMemo(() => buildCalendarDays(visibleMonth), [visibleMonth]);
 
   useEffect(() => {
     const current = transactions.find((item) => item.id === quickAdd.editingTransactionId);
     if (current) {
+      const nextDate = new Date(current.date);
       setDraft({
         title: current.title,
         amount: String(current.amount),
         type: current.type,
         category: current.category,
-        date: current.date,
+        date: toISODate(nextDate),
         note: current.note ?? "",
       });
       setShowDetails(Boolean(current.title || current.note));
+      setShowDateControls(false);
+      setVisibleMonth(startOfMonth(nextDate));
     } else {
+      const nextDate = new Date();
       setDraft(createDefaultDraft());
       setShowDetails(false);
+      setShowDateControls(false);
+      setVisibleMonth(startOfMonth(nextDate));
     }
   }, [quickAdd.editingTransactionId, transactions]);
 
@@ -84,6 +97,18 @@ export function TransactionSheet() {
     setDraft((current) => ({ ...current, amount: value }));
   };
 
+  const setDraftDate = (dateValue: string) => {
+    setDraft((current) => ({ ...current, date: dateValue }));
+    setShowDateControls(false);
+  };
+
+  const longDateLabel = new Intl.DateTimeFormat("en-IN", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  }).format(selectedDate);
+
   return (
     <BottomSheetModal
       ref={sheetRef}
@@ -116,11 +141,90 @@ export function TransactionSheet() {
               <Text style={styles.title}>{isEditing ? "Refine entry" : "Quick add"}</Text>
               <Text style={styles.subtitle}>Capture a transaction in seconds and keep your spending up to date.</Text>
             </View>
-            <View style={styles.datePill}>
+            <PressableScale
+              haptic="selection"
+              onPress={() => {
+                Keyboard.dismiss();
+                setShowDateControls((current) => !current);
+              }}
+              style={styles.datePill}
+            >
               <CalendarDays size={14} color={theme.colors.textMuted} />
               <Text style={styles.dateText}>{formatFriendlyDate(draft.date)}</Text>
-            </View>
+            </PressableScale>
           </View>
+
+          {showDateControls ? (
+            <View style={styles.dateCard}>
+              <View style={styles.dateAdjustRow}>
+                <PressableScale
+                  haptic="selection"
+                  onPress={() => setVisibleMonth((current) => shiftMonth(current, -1))}
+                  style={styles.dateArrowButton}
+                >
+                  <ChevronLeft size={16} color={theme.colors.text} />
+                </PressableScale>
+                <View style={styles.dateSummary}>
+                  <Text style={styles.dateSummaryLabel}>Select date</Text>
+                  <Text style={styles.dateSummaryValue}>{formatMonthLabel(visibleMonth.toISOString())}</Text>
+                </View>
+                <PressableScale
+                  haptic="selection"
+                  disabled={isCurrentMonthVisible}
+                  onPress={() => setVisibleMonth((current) => shiftMonth(current, 1))}
+                  style={[styles.dateArrowButton, isCurrentMonthVisible && styles.dateArrowButtonDisabled]}
+                >
+                  <ChevronRight size={16} color={isCurrentMonthVisible ? theme.colors.textSoft : theme.colors.text} />
+                </PressableScale>
+              </View>
+
+              <View style={styles.weekdaysRow}>
+                {WEEKDAY_LABELS.map((label, index) => (
+                  <Text key={`${label}-${index}`} style={styles.weekdayLabel}>
+                    {label}
+                  </Text>
+                ))}
+              </View>
+
+              <View style={styles.calendarGrid}>
+                {calendarDays.map((day) => {
+                  const isSelected = selectedDate.toDateString() === day.date.toDateString();
+                  const isFuture = day.date.getTime() > today.getTime();
+
+                  return (
+                    <PressableScale
+                      key={day.key}
+                      haptic="selection"
+                      disabled={isFuture}
+                      onPress={() => setDraftDate(toISODate(day.date))}
+                      style={[
+                        styles.dayCell,
+                        !day.inMonth && styles.dayCellMuted,
+                        isSelected && styles.dayCellSelected,
+                        isFuture && styles.dayCellDisabled,
+                      ]}
+                    >
+                      <Text
+                        style={[
+                          styles.dayCellText,
+                          !day.inMonth && styles.dayCellTextMuted,
+                          isSelected && styles.dayCellTextSelected,
+                          isFuture && styles.dayCellTextDisabled,
+                        ]}
+                      >
+                        {day.date.getDate()}
+                      </Text>
+                    </PressableScale>
+                  );
+                })}
+              </View>
+
+              <View style={styles.dateFooter}>
+                <Text style={styles.dateFooterText}>{longDateLabel}</Text>
+                <Chip label="Today" active={selectedDate.toDateString() === today.toDateString()} onPress={() => setDraftDate(toISODate(today))} />
+              </View>
+            </View>
+          ) : null}
 
           <View style={styles.typeRow}>
             {(["expense", "income"] as const).map((type) => (
@@ -228,6 +332,39 @@ export function TransactionSheet() {
       </KeyboardAvoidingView>
     </BottomSheetModal>
   );
+}
+
+const WEEKDAY_LABELS = ["S", "M", "T", "W", "T", "F", "S"];
+
+function startOfDay(date: Date) {
+  const next = new Date(date);
+  next.setHours(0, 0, 0, 0);
+  return next;
+}
+
+function startOfMonth(date: Date) {
+  return new Date(date.getFullYear(), date.getMonth(), 1);
+}
+
+function shiftMonth(date: Date, amount: number) {
+  return new Date(date.getFullYear(), date.getMonth() + amount, 1);
+}
+
+function buildCalendarDays(monthDate: Date) {
+  const firstDay = startOfMonth(monthDate);
+  const firstGridDate = new Date(firstDay);
+  firstGridDate.setDate(firstDay.getDate() - firstDay.getDay());
+
+  return Array.from({ length: 42 }, (_, index) => {
+    const date = new Date(firstGridDate);
+    date.setDate(firstGridDate.getDate() + index);
+
+    return {
+      key: date.toISOString(),
+      date,
+      inMonth: date.getMonth() === monthDate.getMonth(),
+    };
+  });
 }
 
 const styles = StyleSheet.create({
@@ -378,6 +515,108 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 8,
     backgroundColor: theme.colors.surfaceMuted,
+  },
+  dateCard: {
+    backgroundColor: theme.colors.surfaceSoft,
+    borderRadius: theme.radius.md,
+    padding: theme.spacing.md,
+    gap: theme.spacing.md,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+  },
+  dateAdjustRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: theme.spacing.sm,
+  },
+  dateArrowButton: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: theme.colors.surfaceMuted,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+  },
+  dateArrowButtonDisabled: {
+    opacity: 0.5,
+  },
+  dateSummary: {
+    flex: 1,
+    gap: 4,
+  },
+  dateSummaryLabel: {
+    color: theme.colors.textMuted,
+    fontSize: theme.typography.tiny,
+    fontWeight: "700",
+    textTransform: "uppercase",
+    letterSpacing: 0.8,
+  },
+  dateSummaryValue: {
+    color: theme.colors.text,
+    fontSize: theme.typography.body,
+    fontWeight: "700",
+  },
+  weekdaysRow: {
+    flexDirection: "row",
+    gap: 8,
+  },
+  weekdayLabel: {
+    flex: 1,
+    textAlign: "center",
+    color: theme.colors.textSoft,
+    fontSize: theme.typography.tiny,
+    fontWeight: "700",
+  },
+  calendarGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+  },
+  dayCell: {
+    width: "12.9%",
+    aspectRatio: 1,
+    borderRadius: theme.radius.sm,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: theme.colors.surfaceMuted,
+    borderWidth: 1,
+    borderColor: "transparent",
+  },
+  dayCellMuted: {
+    backgroundColor: "rgba(255,255,255,0.03)",
+  },
+  dayCellSelected: {
+    backgroundColor: theme.colors.text,
+  },
+  dayCellDisabled: {
+    opacity: 0.28,
+  },
+  dayCellText: {
+    color: theme.colors.text,
+    fontSize: theme.typography.caption,
+    fontWeight: "700",
+  },
+  dayCellTextMuted: {
+    color: theme.colors.textSoft,
+  },
+  dayCellTextSelected: {
+    color: theme.colors.background,
+  },
+  dayCellTextDisabled: {
+    color: theme.colors.textSoft,
+  },
+  dateFooter: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: theme.spacing.md,
+  },
+  dateFooterText: {
+    flex: 1,
+    color: theme.colors.textMuted,
+    fontSize: theme.typography.caption,
   },
   dateText: {
     color: theme.colors.text,
